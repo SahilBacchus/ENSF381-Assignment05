@@ -73,7 +73,7 @@ const EnrollmentList = ({ enrolledCourses = [], onRemove }) => {
             paddingTop: '15px'
           }}>
             <h3 style={{ color: '#004080' }}>
-              Total Study Load: {totalCredits} weeks
+              <b>Total Study Load:</b> {totalCredits} weeks
             </h3>
           </div>
         </>

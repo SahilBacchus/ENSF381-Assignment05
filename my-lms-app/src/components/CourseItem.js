@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import courseImage from "../images/course1.jpg";
+
 
 const CourseItem = ({ course, onEnroll }) => {
   const [showDescription, setShowDescription] = useState(false);
@@ -14,7 +16,7 @@ const CourseItem = ({ course, onEnroll }) => {
       }
     }}>
       <img
-        src={course.image}
+        src={courseImage}
         alt={course.name}
         style={{
           width: '100%',
