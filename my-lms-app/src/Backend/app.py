@@ -7,6 +7,23 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
 
+class Student:
+    id = None
+    username = ''
+    password = ''
+    email = ''
+    enrolled_courses = []
+
+    def __init__(self, id, username, password, email):
+        self.id = id
+        self.username = username
+        self.password = password
+        self.email = email
+
+
+students = []
+id = 0
+
 
 # Load testimonial data
 with open('testimonials.json', 'r') as file: 
@@ -19,6 +36,19 @@ with open('courses.json', 'r') as file:
 
 
 
+# 1. Student Registration API
+@app.route('/signup', methods=['POST'])
+def register():
+    global id
+    data = request.get_json()
+    print("HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", data)
+    for student in students:
+        if data['username'] == student.username:
+            return {'msg':'exists'}
+    
+    students.append(Student(id, data['username'], data['password'], data['email']))
+    id += 1
+    return {'msg':'success'}
 
 
 # 3. Testimonials API
