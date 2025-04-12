@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import courseImage from "../images/course1.jpg";
 
 
 const CourseItem = ({ course, onEnroll }) => {
@@ -16,7 +15,7 @@ const CourseItem = ({ course, onEnroll }) => {
       }
     }}>
       <img
-        src={courseImage}
+        src={course.image}
         alt={course.name}
         style={{
           width: '100%',

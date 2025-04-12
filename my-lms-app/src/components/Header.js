@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from './Header.module.css';
-import logoImage from "../images/logo.jpg";
 
 
 const Header = () => {
@@ -12,7 +11,7 @@ const Header = () => {
     <header className={styles.header}>
       <div className={styles.logoContainer}>
         <img 
-          src={logoImage}
+          src="/images/logo.jpg"
           alt="LMS Logo" 
           className={styles.logo}
         />

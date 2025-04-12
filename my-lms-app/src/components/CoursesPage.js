@@ -3,13 +3,31 @@ import Header from './Header';
 import Footer from './Footer';
 import CourseItem from './CourseItem';
 import EnrollmentList from './EnrollmentList';
-import courses from '../data/courses';
+// import courses from '../data/courses';
 
 const CoursesPage = () => {
+  const [courses, setCourses] = useState([]);
   const [enrolledCourses, setEnrolledCourses] = useState(() => {
     const saved = localStorage.getItem('enrollments');
     return saved ? JSON.parse(saved) : [];
   });
+
+
+  // Fetch courses from backend
+  useEffect(() => {
+    fetch('http://localhost:5000/courses')
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to fetch');
+        return response.json();
+      })
+      .then(data => {
+        setCourses(data);
+      })
+      .catch(err => {
+        console.log("Error fetching courses: ", err.message);
+      });
+  }, []);
+
 
   // Save to localStorage
   useEffect(() => {
