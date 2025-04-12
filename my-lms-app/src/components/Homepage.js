@@ -1,21 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import Header from './Header';
 import Footer from './Footer';
-import courses from '../data/courses';
-import testimonials from '../data/testimonials';
+// import courses from '../data/courses';
+// import testimonials from '../data/testimonials';
 
 const Homepage = () => {
   const [featuredCourses, setFeaturedCourses] = useState([]);
   const [randomTestimonials, setRandomTestimonials] = useState([]);
 
   useEffect(() => {
-    // Select 3 random courses
-    const shuffledCourses = [...courses].sort(() => 0.5 - Math.random());
-    setFeaturedCourses(shuffledCourses.slice(0, 3));
+    const fetchData = async () => {
+      try {
+        // Fetch courses and select 3 random
+        const coursesResponse = await fetch('http://localhost:5000/courses');
+        if (!coursesResponse.ok) console.error('Failed to fetch courses');
+        const coursesData = await coursesResponse.json();
+        const shuffledCourses = [...coursesData].sort(() => 0.5 - Math.random());
+        setFeaturedCourses(shuffledCourses.slice(0, 3));
 
-    // Select 2 random testimonials
-    const shuffledTestimonials = [...testimonials].sort(() => 0.5 - Math.random());
-    setRandomTestimonials(shuffledTestimonials.slice(0, 2));
+        // Fetch pre-randomized testimonials
+        const testimonialsResponse = await fetch('http://localhost:5000/testimonials');
+        if (!testimonialsResponse.ok) console.error('Failed to fetch testimonials');
+        const testimonialsData = await testimonialsResponse.json();
+        setRandomTestimonials(testimonialsData);
+
+      } catch (err) {
+        console.log("Error:", err.message);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
