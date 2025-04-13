@@ -35,8 +35,12 @@ function LoginForm() {
     
         if (response.ok) {
           if (data.msg === 'success') {
-            console.error('Logged in user');
-            return true;
+            console.log('Logged in user');
+            localStorage.setItem('student_id', data.id)
+            setTimeout(function() {
+            navigate("/courses");
+          }, 2000);           
+           return true;
           } else {
             console.error('Failed to login');
             console.error(data);
