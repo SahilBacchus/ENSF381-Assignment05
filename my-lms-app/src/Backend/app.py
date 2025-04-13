@@ -41,14 +41,25 @@ with open('courses.json', 'r') as file:
 def register():
     global id
     data = request.get_json()
-    print("HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", data)
+    print("Data recieved:", data)
     for student in students:
         if data['username'] == student.username:
             return {'msg':'exists'}
     
     students.append(Student(id, data['username'], data['password'], data['email']))
     id += 1
-    return {'msg':'success'}
+    return {'msg':'success', 'id':id}
+
+
+# 2. Login
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    for student in students:
+        if data['username'] == student.username and data['password'] == student.password:
+            return {'msg':'success'}
+    
+    return {'msg':'failed'}
 
 
 # 3. Testimonials API

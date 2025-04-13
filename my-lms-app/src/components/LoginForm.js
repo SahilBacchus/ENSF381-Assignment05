@@ -1,100 +1,108 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { createContext } from 'react';
+import {useNavigate } from 'react-router-dom';
+import AuthMessage from './AuthMessage';
 
-const LoginForm = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
+export const ThemeContext = createContext(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
+function LoginForm() {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [result, setResult] = useState({success: "", msg: ""});
+    const [data, setData] = useState(null);
+    const navigate = useNavigate();
 
-    try {
-      const response = await fetch('https://jsonplaceholder.typicode.com/users');
-      const users = await response.json();
-      const validUser = users.find(u => u.username === username && u.email === password);
+      useEffect(() => {
+        if (result.success === "success") {
+            setTimeout(function() {
+                navigate("/home");
+            }, 2000);
+        }
+      }, [result, navigate]);
 
-      if (validUser) {
-        login(validUser);
-        // Redirect after 2 seconds
-        setTimeout(() => {
-          navigate('/courses');
-        }, 2000);
-      } else {
-        setError('Invalid username or password!');
-      }
-    } catch (err) {
-      setError('Failed to connect to the server. Please try again later.');
-    } finally {
-      setIsLoading(false);
+    async function loginUser() {
+      const backendEndpoint = 'http://127.0.0.1:5000/login';
+      try {
+        const response = await fetch(backendEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({'username':username, 'password':password}), //Converts a JavaScript object or value into a JSON string.
+        });
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+          if (data.msg === 'success') {
+            console.error('Registered user');
+            return true;
+          } else {
+            console.error('Failed to register user');
+            console.error(data);
+            return false;
+          }
+        } else {
+          console.error('Form submission failed.');
+        }
+      } catch (error) {
+        console.error('Error during form submission:', error); }};
+
+    async function validateCreds() {
+        let resultBox = document.getElementById("login_result");
+        let success  = false;
+        
+        if (!password || !username) {
+            console.log("Password and username cannot be empty");
+            setResult({
+              success: "error",
+              msg: "Password and username cannot be empty",
+            });
+            return;
+          }
+
+        if (password.length < 8) {
+            console.log("Password must be at least 8 characters long");
+            setResult({
+              success: "error",
+              msg: "Password must be at least 8 characters long",
+            });
+            return;
+          }
+
+          success = await loginUser();
+          if (success) {
+            setResult({success: 'success', msg: 'Login successful'});
+            success = true;
+          } else {
+            setResult({success: 'error', msg: 'Login failed, please try again'});
+          }
     }
-  };
 
-  return (
-    <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-      <div style={{ marginBottom: '15px' }}>
-        <label htmlFor="username" style={{ display: 'block', marginBottom: '5px' }}>
-          Username:
-        </label>
-        <input
-          type="text"
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          style={{ width: '100%', padding: '8px' }}
-        />
-      </div>
+    return (
+        <div className="LoginForm">
+            <h2>LMS Login</h2>
+            <div class="form">
+                <label>Username:</label><br/>
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                <br/>
+                <label>Password:</label><br/>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
+            <button onClick={validateCreds}>Login</button>
+            <br/><br/>
+            <a href="#">Forgot Password?</a>
+            <br/>
+            <a href="signup.html">Don't have an account? Sign Up</a> <br/>
+            <div id="login_result">
 
-      <div style={{ marginBottom: '20px' }}>
-        <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>
-          Password:
-        </label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ width: '100%', padding: '8px' }}
-        />
-      </div>
-
-      {error && (
-        <div style={{ 
-          color: '#D32F2F', 
-          backgroundColor: '#FFEBEE', 
-          padding: '10px', 
-          borderRadius: '4px',
-          marginBottom: '15px'
-        }}>
-          {error}
+            </div>
+            <ThemeContext.Provider value={{username, password, result}}>
+                <AuthMessage />
+            </ThemeContext.Provider>
         </div>
-      )}
-
-      <button 
-        type="submit" 
-        disabled={isLoading}
-        style={{
-          width: '100%',
-          padding: '10px',
-          backgroundColor: isLoading ? '#BDBDBD' : '#004080',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: isLoading ? 'not-allowed' : 'pointer'
-        }}
-      >
-        {isLoading ? 'Authenticating...' : 'Login'}
-      </button>
-    </form>
-  );
-};
-
+        
+    );
+}
+  
 export default LoginForm;
