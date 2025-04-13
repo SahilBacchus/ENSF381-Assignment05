@@ -1,4 +1,4 @@
-# ENSF381-Assignment04
+# ENSF381-Assignment05
 
 
 ## To Install Dependecies 
@@ -9,3 +9,7 @@
 ## Running app
 
 - `npm start`
+
+## Running Backend
+ - `In a seperate terminal cd my-lms-app/src/Backend/ `
+ - `python app.py`
