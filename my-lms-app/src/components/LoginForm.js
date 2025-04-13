@@ -2,20 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { createContext } from 'react';
 import {useNavigate } from 'react-router-dom';
 import AuthMessage from './AuthMessage';
+import './LoginForm.css';
 
-export const ThemeContext = createContext(null);
+export const ThemeContextLogin = createContext(null);
 
 function LoginForm() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [result, setResult] = useState({success: "", msg: ""});
-    const [data, setData] = useState(null);
     const navigate = useNavigate();
 
       useEffect(() => {
         if (result.success === "success") {
             setTimeout(function() {
-                navigate("/home");
+                navigate("/courses");
             }, 2000);
         }
       }, [result, navigate]);
@@ -35,10 +35,10 @@ function LoginForm() {
     
         if (response.ok) {
           if (data.msg === 'success') {
-            console.error('Registered user');
+            console.error('Logged in user');
             return true;
           } else {
-            console.error('Failed to register user');
+            console.error('Failed to login');
             console.error(data);
             return false;
           }
@@ -89,17 +89,23 @@ function LoginForm() {
                 <label>Password:</label><br/>
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
+            <br/>
             <button onClick={validateCreds}>Login</button>
             <br/><br/>
             <a href="#">Forgot Password?</a>
             <br/>
-            <a href="signup.html">Don't have an account? Sign Up</a> <br/>
+            <a href="signup">Don't have an account? Sign Up</a> <br/>
+
             <div id="login_result">
 
             </div>
-            <ThemeContext.Provider value={{username, password, result}}>
+            {/*
+            <ThemeContextLogin.Provider value={{username, password, result}}>
                 <AuthMessage />
-            </ThemeContext.Provider>
+            </ThemeContextLogin.Provider>
+            */}
+
+            <AuthMessage result={result}/>
         </div>
         
     );

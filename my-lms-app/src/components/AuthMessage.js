@@ -1,14 +1,15 @@
 import React from 'react';
 import { useContext } from 'react';
-import { ThemeContext } from './RegForm';
+//mport { ThemeContext } from './RegForm';
+//import { ThemeContextLogin } from './LoginForm';
 import DisplayStatus from './DisplayStatus';
 
-function AuthMessage() {
-    const { result } = useContext(ThemeContext);
+function AuthMessage(props) {
+    //const { result } = useContext(ThemeContext);
 
     return (
         <div className="AuthMessage">
-            <DisplayStatus type={result.success} msg={result.msg}/>
+            <DisplayStatus type={props.result.success} msg={props.result.msg}/>
         </div>
     );
   }

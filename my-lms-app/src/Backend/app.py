@@ -57,14 +57,9 @@ def login():
     data = request.get_json()
     for student in students:
         if data['username'] == student.username and data['password'] == student.password:
-            return {'msg':'success'}
+            return {'msg':'success', 'id':id}
     
     return {'msg':'failed'}
-
-
-
-
-
 
 
 # 3. Testimonials API

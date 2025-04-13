@@ -4,7 +4,7 @@ import { createContext } from 'react';
 import AuthMessage from './AuthMessage';
 import './RegForm.css';
 
-export const ThemeContext = createContext(null);
+export const ThemeContextReg = createContext(null);
 
 
 const RegForm = () => {
@@ -184,9 +184,13 @@ async function validateCreds() {
       <div id="signup_result">
 
       </div>
-      <ThemeContext.Provider value={{username, password, result}}>
-          <AuthMessage />
-      </ThemeContext.Provider>
+      {/*
+            <ThemeContextLogin.Provider value={{username, password, result}}>
+                <AuthMessage />
+            </ThemeContextLogin.Provider>
+            */}
+
+      <AuthMessage result={result}/>
     </div>
   );
 };
