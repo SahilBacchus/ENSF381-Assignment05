@@ -48,7 +48,7 @@ def register():
     
     students.append(Student(id, data['username'], data['password'], data['email']))
     id += 1
-    return {'msg':'success', 'id':id}
+    return {'msg':'success'}
 
 
 # 2. Login

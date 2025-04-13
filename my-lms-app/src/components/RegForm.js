@@ -58,6 +58,7 @@ async function registerUser() {
 async function validateCreds() {
   //let resultBox = document.getElementById("login_result");
   let success  = false;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+\[\]{}|;:'",.<>?/`~])[A-Za-z\d!@#$%^&*()\-_=+\[\]{}|;:'",.<>?/`~]{8,}$/;
   
   if (!password || !username) {
     console.log("Password and username cannot be empty");
@@ -104,11 +105,11 @@ async function validateCreds() {
       return;
   }
 
-  if (!password.match(/[a-z]/) || !password.match(/[A-Z]/) || !password.match(/[0-9]/) /*|| !password.match(/[!@#\$%\^&\*\(\)-_=\+\[\]{}\|;:'",\.<>\?\/`~]/)*/) {
-    console.log("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+  if (!passwordRegex.test(password)) {
+    console.log("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character, and no spaces");
       setResult({
         type: "error",
-        msg: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+        msg: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character, and no spaces",
       });
     return;
   }
