@@ -62,6 +62,11 @@ def login():
     return {'msg':'failed'}
 
 
+
+
+
+
+
 # 3. Testimonials API
 @app.route('/testimonials', methods=['GET'])
 def get_testimonials():
@@ -69,11 +74,55 @@ def get_testimonials():
     return jsonify(testimonials[:2])
 
 
+# 4. Enroll Courses API
+@app.route('/enroll/<int:student_id>', methods=['POST'])
+def enroll_course(student_id):
+    course = request.get_json()
+    print(f"Enroll student: {student_id} in {course}")
+
+    for student in students:
+        if student.id == student_id:
+            student.enrolled_courses.append(course)
+            return jsonify({'msg': 'Enrollment successful'})
+
+    return jsonify({'msg': 'Student not found'})
+
+
+# 5. Delete Courses API
+@app.route('/drop/<int:student_id>', methods=['DELETE'])
+def drop_course(student_id):
+    data = request.get_json()
+    print(f"Drop student: {student_id} in {data}")
+
+    for student in students:
+        if student.id == student_id:
+            original_count = len(student.enrolled_courses)
+
+            # Remove course by matching course id
+            student.enrolled_courses = [course for course in student.enrolled_courses if course.get('id') != data.get('id')]
+
+            if len(student.enrolled_courses) < original_count:
+                return jsonify({'msg': 'Course dropped successfully'})
+            else:
+                return jsonify({'msg': 'Course not found in enrollment'})
+
+    return jsonify({'msg': 'Student not found'})
+
+
 # 6. Get All Courses API
 @app.route('/courses', methods=['GET'])
 def get_courses():
     return jsonify(courses)
 
+
+# 7. Get Student Courses API
+@app.route('/student_courses/<int:student_id>', methods=['GET'])
+def get_student_courses(student_id):
+    for student in students:
+        if student.id == student_id:
+            return jsonify(student.enrolled_courses)
+
+    return jsonify([])
 
 
 

@@ -7,10 +7,9 @@ import EnrollmentList from './EnrollmentList';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
-  const [enrolledCourses, setEnrolledCourses] = useState(() => {
-    const saved = localStorage.getItem('enrollments');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const studentId = localStorage.getItem('student_id'); 
+
 
 
   // Fetch courses from backend
@@ -27,24 +26,105 @@ const CoursesPage = () => {
         console.log("Error: ", err.message);
       });
   }, []);
-
-
-  // Save to localStorage
+  
+  
+  // Fetch enrolled courses from backend
   useEffect(() => {
-    localStorage.setItem('enrollments', JSON.stringify(enrolledCourses));
-  }, [enrolledCourses]);
+    if (!studentId){
+      alert("User must be logged in before enrolling");
+      return;  
+    }
+  
+    fetch(`http://localhost:5000/student_courses/${studentId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setEnrolledCourses(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching courses:", error);
+      });
+  }, [studentId]);
 
-  const handleEnroll = (course) => {
-    setEnrolledCourses(prev => [...prev, { 
-      ...course,
-      enrollmentId: Date.now() // Unique ID for each enrollment
-    }]);
+
+  // // Save to localStorage
+  // useEffect(() => {
+  //   localStorage.setItem('enrollments', JSON.stringify(enrolledCourses));
+  // }, [enrolledCourses]);
+
+
+  // Handle enrolling in course
+  const handleEnroll = async (course) => {
+    if (!studentId){
+      alert("User must be logged in before enrolling");
+      return;  
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:5000/enroll/${studentId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(course),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.msg === 'Enrollment successful') {
+          console.log('Course enrolled successfully:', data.msg);
+          setEnrolledCourses(prev => [...prev, {
+            ...course,
+            enrollmentId: Date.now(),
+          }]);
+        } else {
+          console.error('Enrollment failed with backend message:', data.msg);
+          alert(`Error: ${data.msg}`);
+        }
+    } catch (error) {
+      console.error('Error:', error);
+      alert(`Something went wrong during enrollment: ${error}`);
+    }
   };
 
-  const handleRemove = (enrollmentId) => {
-    setEnrolledCourses(prev => 
-      prev.filter(course => course.enrollmentId !== enrollmentId)
-    );
+
+
+  //Handle dropping a course
+  const handleRemove = async (enrollmentId) => {
+    if (!studentId){
+      alert("User must be logged in before dropping"); 
+      return; 
+    }
+
+    const courseToDrop = enrolledCourses.find(course => course.enrollmentId === enrollmentId);
+    if (!courseToDrop) {
+      alert("Course not found.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:5000/drop/${studentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(courseToDrop),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.msg === 'Course dropped successfully') {
+          console.log('Dropped course:', courseToDrop.title);
+          setEnrolledCourses(prev =>
+            prev.filter(course => course.enrollmentId !== enrollmentId)
+          );
+        } else {
+          alert(`Error: ${data.msg}`);
+        }
+      
+    } catch (error) {
+      console.error("Error dropping course:", error);
+      alert(`An error occurred while dropping the course: ${error}`);
+    }
   };
 
   return (

@@ -40,7 +40,8 @@ async function registerUser() {
 
     if (response.ok) {
       if (data.msg === 'success') {
-        console.error('Registered user');
+        console.log('Registered user');
+        localStorage.setItem('student_id', data.student_id);
         return true;
       } else {
         console.error('Failed to register user');
